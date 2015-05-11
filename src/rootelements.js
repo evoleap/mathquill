@@ -2,9 +2,9 @@
  * Root math elements with event delegation.
  ********************************************/
 
-function createRoot(jQ, root, textbox, editable) {
+function createRoot(jQ, root, textbox, editable, options) {
   var contents = jQ.contents().detach();
-
+  onChange = options || noop;
   if (!textbox) {
     jQ.addClass('mathquill-rendered-math');
   }
@@ -128,9 +128,11 @@ function createRoot(jQ, root, textbox, editable) {
     container: jQ,
     key: function(key, evt) {
       cursor.parent.bubble('onKey', key, evt);
+      onChange(jQ);
     },
     text: function(text) {
       cursor.parent.bubble('onText', text);
+      onChange(jQ);
     },
     cut: function(e) {
       if (cursor.selection) {
@@ -141,6 +143,7 @@ function createRoot(jQ, root, textbox, editable) {
       }
 
       e.stopPropagation();
+      onChange(jQ);
     },
     paste: function(text) {
       // FIXME HACK the parser in RootTextBlock needs to be moved to
@@ -154,6 +157,7 @@ function createRoot(jQ, root, textbox, editable) {
       }
 
       cursor.writeLatex(text).show();
+      onChange(jQ);
     }
   });
 

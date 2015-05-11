@@ -5,6 +5,7 @@
 //The publicy exposed method of jQuery.prototype, available (and meant to be
 //called) on jQuery-wrapped HTML DOM elements.
 jQuery.fn.mathquill = function(cmd, latex) {
+  var that=this;
   switch (cmd) {
   case 'redraw':
     return this.each(function() {
@@ -70,21 +71,30 @@ jQuery.fn.mathquill = function(cmd, latex) {
           cursor.hide().parent.blur();
         }
       });
+  case 'vars':
+    return jQuery.unique(jQuery('var',this).map(function(i,el) { return $(el).text(); }).get());  
   default:
     var textbox = cmd === 'textbox',
       editable = textbox || cmd === 'editable',
       RootBlock = textbox ? RootTextBlock : RootMathBlock;
+    var options = latex;
     return this.each(function() {
-      createRoot($(this), RootBlock(), textbox, editable);
+      createRoot($(this), RootBlock(), textbox, editable, options);
     });
   }
 };
-
+var mathquillify = function() {
+  // PVP - We will want to add the callback function for when
+  // the user input changes. That and the fact that turbolinks
+  // requires us to call this on page:load as well as document.
+  // ready, I am commenting this out.
+  // jQuery('.mathquill-editable:not(.mathquill-rendered-math)').mathquill('editable');
+  jQuery('.mathquill-textbox:not(.mathquill-rendered-math)').mathquill('textbox');
+  jQuery('.mathquill-embedded-latex').mathquill();
+}
 //on document ready, mathquill-ify all `<tag class="mathquill-*">latex</tag>`
 //elements according to their CSS class.
 jQuery(function() {
-  jQuery('.mathquill-editable:not(.mathquill-rendered-math)').mathquill('editable');
-  jQuery('.mathquill-textbox:not(.mathquill-rendered-math)').mathquill('textbox');
-  jQuery('.mathquill-embedded-latex').mathquill();
+  mathquillify();
 });
 

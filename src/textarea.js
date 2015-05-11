@@ -151,6 +151,7 @@ var manageTextarea = (function() {
 
     function handleKey() {
       keyCallback(stringify(keydown), keydown);
+
     }
 
     // -*- event handlers -*- //
